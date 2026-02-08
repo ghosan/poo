@@ -6,7 +6,10 @@ import './index.css' // We'll rely on global styles for now or module if preferr
 
 // Connect to the server
 // In production, use the environment variable. In development, fallback to localhost.
-const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000');
+const socket = io(import.meta.env.VITE_API_URL || 'http://localhost:3000', {
+  transports: ['websocket', 'polling'],
+  withCredentials: true
+});
 
 function App() {
   const [count, setCount] = useState(0);
