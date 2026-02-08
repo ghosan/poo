@@ -16,13 +16,29 @@ function App() {
   const [isSitting, setIsSitting] = useState(false);
 
   useEffect(() => {
+    console.log("Attempting to connect to:", import.meta.env.VITE_API_URL || 'http://localhost:3000');
+
+    socket.on('connect', () => {
+      console.log("Connected to server! Socket ID:", socket.id);
+      socket.emit('getCount');
+    });
+
+    socket.on('connect_error', (err) => {
+      console.error("Connection error:", err);
+    });
+
     // Listen for count updates
     socket.on('updateCount', (newCount) => {
+      console.log("Count updated:", newCount);
       setCount(newCount);
     });
 
+    if (socket.connected) socket.emit('getCount');
+
     return () => {
       socket.off('updateCount');
+      socket.off('connect');
+      socket.off('connect_error');
     };
   }, []);
 
@@ -46,6 +62,11 @@ function App() {
         <Counter count={count} />
         <div className="button-wrapper">
           <ToiletButton isSitting={isSitting} onClick={handleToggle} />
+        </div>
+        {/* Helper debug for deployment troubleshooting */}
+        <div style={{ padding: '20px', fontSize: '12px', color: '#666', textAlign: 'center' }}>
+          Debug: {import.meta.env.VITE_API_URL || 'Using localhost fallback'} <br />
+          Status: {socket.connected ? 'Connected ✅' : 'Disconnected ❌'}
         </div>
       </main>
 

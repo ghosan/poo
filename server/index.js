@@ -26,8 +26,10 @@ const sittingUsers = new Set();
 io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
-    // Send current count to new user
-    socket.emit('updateCount', sittingUsers.size);
+    // Send current count when client asks (avoids race: client might not be listening yet)
+    socket.on('getCount', () => {
+        socket.emit('updateCount', sittingUsers.size);
+    });
 
     socket.on('sitDown', () => {
         sittingUsers.add(socket.id);
