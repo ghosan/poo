@@ -6,6 +6,10 @@ import cors from 'cors';
 const app = express();
 app.use(cors());
 
+app.get('/', (req, res) => {
+    res.send('Toilet Status Server is Running 🚽');
+});
+
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
